@@ -23,7 +23,7 @@ export function LoginForm() {
           name="email"
           required
           className="rounded-2xl border border-line bg-background px-4 py-3 outline-none"
-          placeholder="admin@planillapro.demo"
+          placeholder="admin@planillapro.com"
         />
       </label>
       <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
