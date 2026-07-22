@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const DEMO_SESSION_COOKIE = "planilla_demo_session";
 
-const protectedPrefixes = ["/dashboard", "/api/reports"];
+const protectedPrefixes = ["/api/reports"];
 
 function isProtectedPath(pathname: string) {
   return protectedPrefixes.some((prefix) => pathname.startsWith(prefix));
@@ -71,5 +71,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/reports/:path*"],
+  matcher: ["/api/reports/:path*"],
 };
