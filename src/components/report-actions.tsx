@@ -2,11 +2,15 @@
 
 import { useState, useTransition } from "react";
 
+import { usePayroll } from "@/components/payroll-provider";
+import { serializeReportForEmail } from "@/lib/payroll";
+
 type ReportActionsProps = {
   reportType: "personal" | "colaboradores" | "planilla";
 };
 
 export function ReportActions({ reportType }: ReportActionsProps) {
+  const { payrollSummary } = usePayroll();
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -39,13 +43,18 @@ export function ReportActions({ reportType }: ReportActionsProps) {
           onClick={() => {
             startTransition(async () => {
               setMessage("");
+              const report = serializeReportForEmail(payrollSummary, reportType);
 
               const response = await fetch("/api/reports/email", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ reportType, recipient }),
+                body: JSON.stringify({
+                  recipient,
+                  title: report.title,
+                  body: report.body,
+                }),
               });
 
               const payload = (await response.json()) as { message: string };

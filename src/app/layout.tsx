@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Planilla Pro Panama",
-  description: "Demo academica de planilla y reportes contables con Next.js y Supabase.",
+  title: "Calculadora de Planilla Panama",
+  description: "Calculadora web para construir planillas, calcular descuentos y generar reportes contables.",
 };
 
 export default function RootLayout({

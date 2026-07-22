@@ -3,11 +3,11 @@ import { Resend } from "resend";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/auth";
-import { serializeReportForEmail } from "@/lib/payroll";
 
 const schema = z.object({
-  reportType: z.enum(["personal", "colaboradores", "planilla"]),
   recipient: z.email(),
+  title: z.string().min(1),
+  body: z.string().min(1),
 });
 
 export async function POST(request: Request) {
@@ -32,14 +32,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const report = serializeReportForEmail(payload.data.reportType);
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
     from: process.env.REPORT_EMAIL_FROM,
     to: payload.data.recipient,
-    subject: report.title,
-    text: report.body,
+    subject: payload.data.title,
+    text: payload.data.body,
   });
 
   return NextResponse.json({

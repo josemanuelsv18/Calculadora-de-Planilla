@@ -19,13 +19,13 @@ export default async function LoginPage() {
       <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="rounded-[2rem] bg-panel-strong p-8 text-white shadow-2xl md:p-10">
           <span className="inline-flex rounded-full border border-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">
-            Planilla academica 2026
+            Calculadora de planilla
           </span>
           <h1 className="mt-6 max-w-xl text-4xl font-semibold leading-tight md:text-5xl">
-            Software de planillas para Panama con reportes listos para imprimir.
+            Construye cualquier planilla para Panama y obten reportes listos para imprimir.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-white/72 md:text-lg">
-            El demo usa los datos del grupo 4, reglas fiscales panamenas vigentes y una experiencia pensada para reportes contables claros.
+            Ingresa colaboradores, ingresos, descuentos y parametros del periodo para calcular la planilla completa con reglas panamenas vigentes.
           </p>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[

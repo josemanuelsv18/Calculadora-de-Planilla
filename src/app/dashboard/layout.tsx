@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BarChart3, BriefcaseBusiness, Files, Search } from "lucide-react";
 
+import { PayrollProvider } from "@/components/payroll-provider";
 import { SidebarLink } from "@/components/sidebar-link";
 import { signOutAction } from "@/app/dashboard/actions";
 import { requireAdmin } from "@/lib/auth";
@@ -18,10 +19,10 @@ export default async function DashboardLayout({
         <aside className="no-print rounded-[2rem] border border-line bg-panel p-5 shadow-sm">
           <Link href="/dashboard" className="block rounded-3xl bg-panel-strong p-5 text-white">
             <p className="text-xs uppercase tracking-[0.25em] text-white/65">
-              Planilla Pro
+              Calculadora de planilla
             </p>
-            <p className="mt-3 text-2xl font-semibold">Grupo 4</p>
-            <p className="mt-2 text-sm text-white/72">Demo academica con calculo panameno 2026.</p>
+            <p className="mt-3 text-2xl font-semibold">Panama</p>
+            <p className="mt-2 text-sm text-white/72">Construye y calcula planillas quincenales de forma libre.</p>
           </Link>
 
           <nav className="mt-6 flex flex-col gap-2">
@@ -56,7 +57,7 @@ export default async function DashboardLayout({
         </aside>
 
         <main className="rounded-[2rem] border border-line bg-panel p-5 shadow-sm md:p-8">
-          {children}
+          <PayrollProvider>{children}</PayrollProvider>
         </main>
       </div>
     </div>

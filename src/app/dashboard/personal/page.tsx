@@ -1,8 +1,12 @@
+"use client";
+
+import { PayrollCalculatorPanel } from "@/components/payroll-calculator-panel";
+import { usePayroll } from "@/components/payroll-provider";
 import { ReportActions } from "@/components/report-actions";
-import { currency, getGroup4PayrollSummary } from "@/lib/payroll";
+import { currency } from "@/lib/payroll";
 
 export default function PersonalPage() {
-  const summary = getGroup4PayrollSummary();
+  const { payrollSummary } = usePayroll();
 
   return (
     <div className="space-y-6">
@@ -16,41 +20,71 @@ export default function PersonalPage() {
         </p>
       </header>
 
+      <PayrollCalculatorPanel
+        title="Datos de entrada"
+        description="Edita aqui la informacion base de la empresa y del personal antes de imprimir o enviar el reporte."
+      />
+
       <ReportActions reportType="personal" />
 
       <section className="grid gap-4 xl:grid-cols-2">
-        {summary.employees.map((item) => (
-          <article key={item.employee.id} className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm">
+        {payrollSummary.employees.map((item) => (
+          <article
+            key={item.employee.id}
+            className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm"
+          >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">{item.employee.fullName}</h2>
-                <p className="mt-1 text-sm text-muted">{item.employee.position}</p>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {item.employee.fullName || "Sin nombre"}
+                </h2>
+                <p className="mt-1 text-sm text-muted">
+                  {item.employee.position || "Cargo sin definir"}
+                </p>
               </div>
               <span className="rounded-full bg-panel px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                Grupo 4
+                {item.employee.cedula || "Sin cedula"}
               </span>
             </div>
 
             <dl className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Cedula</dt>
-                <dd className="mt-1 text-sm text-foreground">{item.employee.cedula}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                  Cedula
+                </dt>
+                <dd className="mt-1 text-sm text-foreground">{item.employee.cedula || "-"}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Estado civil</dt>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                  Estado civil
+                </dt>
                 <dd className="mt-1 text-sm text-foreground">{item.employee.maritalStatus}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Salario base mensual</dt>
-                <dd className="mt-1 text-sm text-foreground">{currency(item.employee.monthlyBaseSalary)}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                  Salario base mensual
+                </dt>
+                <dd className="mt-1 text-sm text-foreground">
+                  {currency(item.employee.monthlyBaseSalary)}
+                </dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Anio de inicio</dt>
-                <dd className="mt-1 text-sm text-foreground">{item.employee.startYear}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                  Anio de inicio
+                </dt>
+                <dd className="mt-1 text-sm text-foreground">{item.employee.startYear || "-"}</dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Inicio de labores</dt>
-                <dd className="mt-1 text-sm text-foreground">{item.employee.startDate}</dd>
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                  Inicio de labores
+                </dt>
+                <dd className="mt-1 text-sm text-foreground">{item.employee.startDate || "-"}</dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+                  Notas
+                </dt>
+                <dd className="mt-1 text-sm text-foreground">{item.employee.notes || "-"}</dd>
               </div>
             </dl>
           </article>
