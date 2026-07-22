@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import {
@@ -13,6 +13,11 @@ import {
 type PayrollContextValue = {
   payrollInput: PayrollInput;
   payrollSummary: ReturnType<typeof buildPayrollSummary>;
+  savedCalculations: SavedPayrollCalculation[];
+  activeCalculationId: string;
+  isStorageBusy: boolean;
+  storageAvailable: boolean;
+  storageMessage: string;
   addEmployee: () => void;
   removeEmployee: (employeeId: string) => void;
   updateCompanyField: <K extends keyof PayrollInput>(field: K, value: PayrollInput[K]) => void;
@@ -34,6 +39,17 @@ type PayrollContextValue = {
     field: "label" | "amount",
     value: string | number,
   ) => void;
+  refreshSavedCalculations: () => Promise<void>;
+  saveCurrentPayroll: () => Promise<void>;
+  loadPayrollCalculation: (calculationId: string) => Promise<void>;
+};
+
+export type SavedPayrollCalculation = {
+  id: string;
+  title: string;
+  payrollInput?: PayrollInput;
+  createdAt: string;
+  updatedAt: string;
 };
 
 const PayrollContext = createContext<PayrollContextValue | null>(null);
@@ -67,8 +83,120 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
     ...DEFAULT_PAYROLL_INPUT,
     employees: [createEmployee()],
   });
+  const [savedCalculations, setSavedCalculations] = useState<SavedPayrollCalculation[]>([]);
+  const [activeCalculationId, setActiveCalculationId] = useState("");
+  const [isStorageBusy, setIsStorageBusy] = useState(false);
+  const [storageAvailable, setStorageAvailable] = useState(false);
+  const [storageMessage, setStorageMessage] = useState("");
 
   const payrollSummary = buildPayrollSummary(payrollInput);
+
+  useEffect(() => {
+    void refreshSavedCalculations();
+  }, []);
+
+  function getPayrollTitle() {
+    const company = payrollInput.companyName.trim() || "Planilla";
+    const period = payrollInput.periodLabel.trim() || "Periodo sin definir";
+
+    return `${company} - ${period}`;
+  }
+
+  async function refreshSavedCalculations() {
+    setIsStorageBusy(true);
+
+    try {
+      const response = await fetch("/api/payroll-calculations");
+      const payload = (await response.json()) as {
+        calculations?: SavedPayrollCalculation[];
+        storageAvailable?: boolean;
+        message?: string;
+      };
+
+      setSavedCalculations(payload.calculations ?? []);
+      setStorageAvailable(Boolean(payload.storageAvailable));
+      setStorageMessage(
+        payload.message ??
+          (payload.storageAvailable
+            ? "Supabase esta listo para guardar planillas."
+            : ""),
+      );
+    } catch {
+      setStorageAvailable(false);
+      setStorageMessage("No se pudo consultar Supabase para planillas guardadas.");
+    } finally {
+      setIsStorageBusy(false);
+    }
+  }
+
+  async function saveCurrentPayroll() {
+    setIsStorageBusy(true);
+
+    try {
+      const response = await fetch(
+        activeCalculationId
+          ? `/api/payroll-calculations/${activeCalculationId}`
+          : "/api/payroll-calculations",
+        {
+          method: activeCalculationId ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: getPayrollTitle(),
+            payrollInput,
+          }),
+        },
+      );
+      const payload = (await response.json()) as {
+        calculation?: SavedPayrollCalculation;
+        message?: string;
+      };
+
+      if (!response.ok || !payload.calculation) {
+        setStorageMessage(payload.message ?? "No se pudo guardar la planilla.");
+        return;
+      }
+
+      setActiveCalculationId(payload.calculation.id);
+      setStorageMessage("Planilla guardada en Supabase.");
+      await refreshSavedCalculations();
+    } catch {
+      setStorageMessage("No se pudo guardar la planilla en Supabase.");
+    } finally {
+      setIsStorageBusy(false);
+    }
+  }
+
+  async function loadPayrollCalculation(calculationId: string) {
+    if (!calculationId) {
+      setActiveCalculationId("");
+      return;
+    }
+
+    setIsStorageBusy(true);
+
+    try {
+      const response = await fetch(`/api/payroll-calculations/${calculationId}`);
+      const payload = (await response.json()) as {
+        calculation?: SavedPayrollCalculation;
+        message?: string;
+      };
+
+      if (!response.ok || !payload.calculation?.payrollInput) {
+        setStorageMessage(payload.message ?? "No se pudo cargar la planilla.");
+        return;
+      }
+
+      setPayrollInput(payload.calculation.payrollInput);
+      setActiveCalculationId(payload.calculation.id);
+      setStorageMessage("Planilla cargada desde Supabase.");
+    } catch {
+      setStorageMessage("No se pudo cargar la planilla desde Supabase.");
+    } finally {
+      setIsStorageBusy(false);
+    }
+  }
 
   function updateCompanyField<K extends keyof PayrollInput>(
     field: K,
@@ -193,6 +321,11 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
       value={{
         payrollInput,
         payrollSummary,
+        savedCalculations,
+        activeCalculationId,
+        isStorageBusy,
+        storageAvailable,
+        storageMessage,
         addEmployee,
         removeEmployee,
         updateCompanyField,
@@ -201,6 +334,9 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
         addDeduction,
         removeDeduction,
         updateDeduction,
+        refreshSavedCalculations,
+        saveCurrentPayroll,
+        loadPayrollCalculation,
       }}
     >
       {children}

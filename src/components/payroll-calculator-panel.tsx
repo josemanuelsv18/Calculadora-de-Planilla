@@ -20,6 +20,11 @@ export function PayrollCalculatorPanel({
   const {
     payrollInput,
     payrollSummary,
+    savedCalculations,
+    activeCalculationId,
+    isStorageBusy,
+    storageAvailable,
+    storageMessage,
     addEmployee,
     removeEmployee,
     updateCompanyField,
@@ -28,6 +33,9 @@ export function PayrollCalculatorPanel({
     addDeduction,
     removeDeduction,
     updateDeduction,
+    refreshSavedCalculations,
+    saveCurrentPayroll,
+    loadPayrollCalculation,
   } = usePayroll();
 
   return (
@@ -60,6 +68,51 @@ export function PayrollCalculatorPanel({
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="mt-6 rounded-[1.5rem] border border-line bg-soft p-4">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Planillas guardadas</p>
+            <p className="mt-1 text-sm leading-6 text-muted">
+              Guarda la planilla actual en Supabase o carga una planilla existente.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_auto_auto] xl:min-w-[720px]">
+            <select
+              value={activeCalculationId}
+              onChange={(event) => loadPayrollCalculation(event.target.value)}
+              disabled={!storageAvailable || isStorageBusy}
+              className="rounded-2xl border border-line bg-panel px-4 py-3 outline-none disabled:opacity-60"
+            >
+              <option value="">Nueva planilla</option>
+              {savedCalculations.map((calculation) => (
+                <option key={calculation.id} value={calculation.id}>
+                  {calculation.title}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={saveCurrentPayroll}
+              disabled={!storageAvailable || isStorageBusy}
+              className="rounded-2xl bg-panel-strong px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+            >
+              {activeCalculationId ? "Actualizar" : "Guardar"}
+            </button>
+            <button
+              type="button"
+              onClick={refreshSavedCalculations}
+              disabled={isStorageBusy}
+              className="rounded-2xl border border-line px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-panel disabled:opacity-60"
+            >
+              Refrescar
+            </button>
+          </div>
+        </div>
+        {storageMessage ? (
+          <p className="mt-3 text-sm text-muted">{storageMessage}</p>
+        ) : null}
       </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)]">

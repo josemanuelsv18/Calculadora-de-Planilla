@@ -51,6 +51,7 @@ export function ReportActions({ reportType }: ReportActionsProps) {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                  reportType,
                   recipient,
                   title: report.title,
                   body: report.body,

@@ -3,8 +3,13 @@ import { Resend } from "resend";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/auth";
+import {
+  createSupabaseServerClient,
+  isSupabaseAuthEnabled,
+} from "@/lib/supabase/server";
 
 const schema = z.object({
+  reportType: z.enum(["personal", "colaboradores", "planilla"]).optional(),
   recipient: z.email(),
   title: z.string().min(1),
   body: z.string().min(1),
@@ -40,6 +45,15 @@ export async function POST(request: Request) {
     subject: payload.data.title,
     text: payload.data.body,
   });
+
+  if (isSupabaseAuthEnabled()) {
+    const supabase = await createSupabaseServerClient();
+    await supabase.from("report_email_logs").insert({
+      report_type: payload.data.reportType ?? "planilla",
+      recipient_email: payload.data.recipient,
+      status: "sent",
+    });
+  }
 
   return NextResponse.json({
     message: `Reporte enviado a ${payload.data.recipient}.`,
