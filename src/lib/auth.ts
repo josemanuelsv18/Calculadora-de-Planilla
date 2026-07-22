@@ -8,7 +8,7 @@ import {
 
 const DEMO_SESSION_COOKIE = "planilla_demo_session";
 const DEMO_ADMIN_EMAIL =
-  process.env.DEMO_ADMIN_EMAIL ?? "admin@planillapro.demo";
+  process.env.DEMO_ADMIN_EMAIL ?? "admin@planillapro.com";
 const DEMO_ADMIN_PASSWORD =
   process.env.DEMO_ADMIN_PASSWORD ?? "Planilla2026*";
 
