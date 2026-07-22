@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardWorkspace } from "@/components/dashboard-workspace";
 import { PayrollCalculatorPanel } from "@/components/payroll-calculator-panel";
 import { usePayroll } from "@/components/payroll-provider";
 import { ReportActions } from "@/components/report-actions";
@@ -9,29 +10,31 @@ export default function PersonalPage() {
   const { payrollSummary } = usePayroll();
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
-          Pantalla A
-        </p>
-        <h1 className="text-3xl font-semibold text-foreground">Datos del personal</h1>
-        <p className="max-w-3xl text-sm leading-6 text-muted">
-          Nombre completo, salario base, cedula, estado civil, cargo, anio e inicio de labores.
-        </p>
-      </header>
-
-      <PayrollCalculatorPanel
-        title="Datos de entrada"
-        description="Edita aqui la informacion base de la empresa y del personal antes de imprimir o enviar el reporte."
-      />
-
-      <ReportActions reportType="personal" />
-
-      <section className="grid gap-4 xl:grid-cols-2">
+    <DashboardWorkspace
+      header={
+        <header className="space-y-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
+            Pantalla A
+          </p>
+          <h1 className="text-3xl font-semibold text-foreground">Datos del personal</h1>
+          <p className="max-w-3xl text-sm leading-6 text-muted">
+            Nombre completo, salario base, cedula, estado civil, cargo, anio e inicio de labores.
+          </p>
+        </header>
+      }
+      calculator={
+        <PayrollCalculatorPanel
+          title="Datos de entrada"
+          description="Edita aqui la informacion base de la empresa y del personal antes de imprimir o enviar el reporte."
+        />
+      }
+      actions={<ReportActions reportType="personal" />}
+    >
+      <section className="grid gap-4 2xl:grid-cols-2">
         {payrollSummary.employees.map((item) => (
           <article
             key={item.employee.id}
-            className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm"
+            className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -90,6 +93,6 @@ export default function PersonalPage() {
           </article>
         ))}
       </section>
-    </div>
+    </DashboardWorkspace>
   );
 }

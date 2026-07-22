@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/components/login-form";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getAuthenticatedAdmin, getDemoCredentials } from "@/lib/auth";
 import { isSupabaseAuthEnabled } from "@/lib/supabase/server";
 
@@ -16,7 +17,7 @@ export default async function LoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-12">
-      <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <div className="app-shell grid w-full gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="rounded-[2rem] bg-panel-strong p-8 text-white shadow-2xl md:p-10">
           <span className="inline-flex rounded-full border border-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">
             Calculadora de planilla
@@ -44,6 +45,10 @@ export default async function LoginPage() {
         </section>
 
         <section className="rounded-[2rem] border border-line bg-panel p-8 shadow-xl md:p-10">
+          <div className="mb-6">
+            <ThemeToggle />
+          </div>
+
           <div className="mb-8">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
               Acceso administrador

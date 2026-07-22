@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Building2, Calculator, ShieldCheck } from "lucide-react";
 
+import { DashboardWorkspace } from "@/components/dashboard-workspace";
 import { PayrollCalculatorPanel } from "@/components/payroll-calculator-panel";
 import { usePayroll } from "@/components/payroll-provider";
 import {
@@ -19,30 +20,31 @@ export default function DashboardPage() {
   const { payrollSummary } = usePayroll();
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-[2rem] bg-panel-strong p-6 text-white md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-          Centro de calculo
-        </p>
-        <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold md:text-4xl">
-              Calcula, revisa e imprime cualquier planilla desde una sola interfaz.
-            </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-white/72 md:text-base">
-              La aplicacion genera resultados dinamicos segun los datos que ingreses para cada colaborador y periodo.
-            </p>
+    <DashboardWorkspace
+      header={
+        <section className="rounded-[2rem] bg-panel-strong p-6 text-white md:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+            Centro de calculo
+          </p>
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold md:text-4xl">
+                Calcula, revisa e imprime cualquier planilla desde una sola interfaz.
+              </h1>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-white/72 md:text-base">
+                La aplicacion genera resultados dinamicos segun los datos que ingreses para cada colaborador y periodo.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/6 p-4 text-sm text-white/78">
+              <p>{payrollSummary.companyName || "Empresa sin nombre"}</p>
+              <p>{payrollSummary.periodLabel || "Periodo sin definir"}</p>
+            </div>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-white/6 p-4 text-sm text-white/78">
-            <p>{payrollSummary.companyName || "Empresa sin nombre"}</p>
-            <p>{payrollSummary.periodLabel || "Periodo sin definir"}</p>
-          </div>
-        </div>
-      </section>
-
-      <PayrollCalculatorPanel />
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        </section>
+      }
+      calculator={<PayrollCalculatorPanel />}
+    >
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4">
         {[
           {
             label: "Total bruto",
@@ -67,7 +69,7 @@ export default function DashboardPage() {
         ].map((item) => (
           <article
             key={item.label}
-            className="print-card rounded-3xl border border-line bg-background p-5 shadow-sm"
+            className="print-card content-card rounded-3xl border border-line p-5 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted">{item.label}</p>
@@ -78,12 +80,12 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
+      <section className="grid gap-4 2xl:grid-cols-3">
         {REPORT_CARDS.map((report) => (
           <Link
             key={report.href}
             href={report.href}
-            className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
           >
             <p className="text-xl font-semibold text-foreground">{report.title}</p>
             <p className="mt-3 text-sm leading-6 text-muted">{report.description}</p>
@@ -94,8 +96,8 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
-        <article className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm">
+      <section className="grid gap-4 2xl:grid-cols-[0.9fr_1.1fr]">
+        <article className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm">
           <p className="text-lg font-semibold text-foreground">Parametros de calculo</p>
           <div className="mt-5 space-y-3 text-sm text-muted">
             <p>CSS empleado: {toPercentage(EMPLOYEE_CSS_RATE)}</p>
@@ -113,7 +115,7 @@ export default function DashboardPage() {
           </div>
         </article>
 
-        <article className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm">
+        <article className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm">
           <p className="text-lg font-semibold text-foreground">Resultado por colaborador</p>
           <div className="mt-5 divide-y divide-line">
             {payrollSummary.employees.map((employee) => (
@@ -135,6 +137,6 @@ export default function DashboardPage() {
           </div>
         </article>
       </section>
-    </div>
+    </DashboardWorkspace>
   );
 }

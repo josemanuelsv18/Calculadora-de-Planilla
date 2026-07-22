@@ -1,15 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f5f7;
-  --foreground: #14212f;
+  --background: #f6f7fb;
+  --foreground: #162132;
   --panel: #ffffff;
-  --panel-strong: #102033;
-  --muted: #5c6c7d;
-  --line: #d7dde4;
-  --accent: #17b897;
-  --accent-strong: #0e8f75;
+  --panel-strong: #12314f;
+  --muted: #607185;
+  --line: #d9e1ea;
+  --accent: #167cc2;
+  --accent-strong: #0f5f97;
   --danger: #c84d5e;
+  --soft: #eef3f8;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --background: #08111d;
+  --foreground: #eef2f6;
+  --panel: #102033;
+  --panel-strong: #08111d;
+  --muted: #a3b0be;
+  --line: #23364a;
+  --accent: #1fd0aa;
+  --accent-strong: #12b08f;
+  --danger: #ef7f8e;
+  --soft: #0d1826;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -22,22 +38,9 @@
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-danger: var(--danger);
+  --color-soft: var(--soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #08111d;
-    --foreground: #eef2f6;
-    --panel: #102033;
-    --panel-strong: #08111d;
-    --muted: #a3b0be;
-    --line: #23364a;
-    --accent: #1fd0aa;
-    --accent-strong: #12b08f;
-    --danger: #ef7f8e;
-  }
 }
 
 * {
@@ -52,6 +55,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 9%, transparent), transparent 30%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--panel-strong) 8%, transparent), transparent 28%);
 }
 
 a {
@@ -61,8 +67,37 @@ a {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
+}
+
+input,
+select,
+textarea,
+button {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 1720px;
+}
+
+.content-card {
+  background: color-mix(in srgb, var(--panel) 92%, var(--soft));
 }
 
 @media print {

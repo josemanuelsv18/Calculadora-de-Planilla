@@ -31,8 +31,8 @@ export function PayrollCalculatorPanel({
   } = usePayroll();
 
   return (
-    <section className="no-print rounded-[2rem] border border-line bg-background p-5 shadow-sm md:p-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="no-print content-card rounded-[2rem] border border-line p-5 shadow-sm md:p-6">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
             Calculadora
@@ -40,20 +40,20 @@ export function PayrollCalculatorPanel({
           <h2 className="mt-2 text-2xl font-semibold text-foreground">{title}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{description}</p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-line bg-panel px-4 py-3">
+        <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[420px]">
+          <div className="rounded-2xl border border-line bg-soft px-4 py-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Colaboradores</p>
             <p className="mt-1 text-xl font-semibold text-foreground">
               {payrollInput.employees.length}
             </p>
           </div>
-          <div className="rounded-2xl border border-line bg-panel px-4 py-3">
+          <div className="rounded-2xl border border-line bg-soft px-4 py-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Bruto total</p>
             <p className="mt-1 text-xl font-semibold text-foreground">
               {currency(payrollSummary.totals.grossIncome)}
             </p>
           </div>
-          <div className="rounded-2xl border border-line bg-panel px-4 py-3">
+          <div className="rounded-2xl border border-line bg-soft px-4 py-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Neto total</p>
             <p className="mt-1 text-xl font-semibold text-foreground">
               {currency(payrollSummary.totals.netPay)}
@@ -148,8 +148,8 @@ export function PayrollCalculatorPanel({
         </label>
       </div>
 
-      <div className="mt-6 flex items-center justify-between gap-4">
-        <div className="text-sm text-muted">
+      <div className="mt-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="rounded-2xl border border-dashed border-line bg-soft px-4 py-3 text-sm text-muted xl:max-w-3xl">
           CSS empleado {toPercentage(0.0975)} | CSS empleador {toPercentage(0.1325)} | Seguro educativo empleado {toPercentage(0.0125)} | Seguro educativo empleador {toPercentage(0.015)}
         </div>
         <button
@@ -163,8 +163,12 @@ export function PayrollCalculatorPanel({
 
       <div className="mt-6 space-y-4">
         {payrollInput.employees.map((employee, employeeIndex) => (
-          <article key={employee.id} className="rounded-[2rem] border border-line bg-panel p-5 shadow-sm">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <details
+            key={employee.id}
+            open={employeeIndex === 0}
+            className="rounded-[2rem] border border-line bg-panel shadow-sm"
+          >
+            <summary className="flex cursor-pointer list-none flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
                   Colaborador {employeeIndex + 1}
@@ -172,18 +176,34 @@ export function PayrollCalculatorPanel({
                 <p className="mt-1 text-lg font-semibold text-foreground">
                   {employee.fullName || "Sin nombre"}
                 </p>
+                <p className="mt-1 text-sm text-muted">
+                  {employee.position || "Cargo sin definir"} · Base {currency(employee.monthlyBaseSalary)}
+                </p>
               </div>
-              <button
-                type="button"
-                onClick={() => removeEmployee(employee.id)}
-                disabled={payrollInput.employees.length === 1}
-                className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
-              >
-                Eliminar colaborador
-              </button>
-            </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-soft px-3 py-2 text-sm font-semibold text-foreground">
+                  Neto estimado {currency(
+                    payrollSummary.employees.find(
+                      (summaryEmployee) => summaryEmployee.employee.id === employee.id,
+                    )?.netPay ?? 0,
+                  )}
+                </span>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    removeEmployee(employee.id);
+                  }}
+                  disabled={payrollInput.employees.length === 1}
+                  className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </summary>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="border-t border-line px-5 pb-5 pt-5">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
                 Nombre completo
                 <input
@@ -293,7 +313,7 @@ export function PayrollCalculatorPanel({
               </label>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
                 Bonificacion general
                 <input
@@ -415,8 +435,8 @@ export function PayrollCalculatorPanel({
               </label>
             </div>
 
-            <div className="mt-6 rounded-[1.5rem] border border-line bg-background p-4">
-              <div className="flex items-center justify-between gap-4">
+              <div className="mt-6 rounded-[1.5rem] border border-line bg-background p-4">
+                <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold text-foreground">Descuentos mensuales</p>
                   <p className="text-sm text-muted">
@@ -432,57 +452,60 @@ export function PayrollCalculatorPanel({
                 </button>
               </div>
 
-              <div className="mt-4 space-y-3">
-                {employee.monthlyDeductions.length ? (
-                  employee.monthlyDeductions.map((deduction, deductionIndex) => (
-                    <div
-                      key={`${employee.id}-${deductionIndex}`}
-                      className="grid gap-3 md:grid-cols-[1fr_180px_auto]"
-                    >
-                      <input
-                        type="text"
-                        value={deduction.label}
-                        onChange={(event) =>
-                          updateDeduction(
-                            employee.id,
-                            deductionIndex,
-                            "label",
-                            event.target.value,
-                          )
-                        }
-                        placeholder="Prestamo, ahorro, adelanto..."
-                        className="rounded-2xl border border-line bg-panel px-4 py-3 outline-none"
-                      />
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={deduction.amount}
-                        onChange={(event) =>
-                          updateDeduction(
-                            employee.id,
-                            deductionIndex,
-                            "amount",
-                            parseNumber(event.target.value),
-                          )
-                        }
-                        className="rounded-2xl border border-line bg-panel px-4 py-3 outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeDeduction(employee.id, deductionIndex)}
-                        className="rounded-2xl border border-line px-4 py-3 text-sm font-semibold text-foreground"
+                <div className="mt-4 space-y-3">
+                  {employee.monthlyDeductions.length ? (
+                    employee.monthlyDeductions.map((deduction, deductionIndex) => (
+                      <div
+                        key={`${employee.id}-${deductionIndex}`}
+                        className="grid gap-3 md:grid-cols-[1fr_180px_auto]"
                       >
-                        Quitar
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted">Este colaborador no tiene descuentos manuales.</p>
-                )}
+                        <input
+                          type="text"
+                          value={deduction.label}
+                          onChange={(event) =>
+                            updateDeduction(
+                              employee.id,
+                              deductionIndex,
+                              "label",
+                              event.target.value,
+                            )
+                          }
+                          placeholder="Prestamo, ahorro, adelanto..."
+                          className="rounded-2xl border border-line bg-panel px-4 py-3 outline-none"
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={deduction.amount}
+                          onChange={(event) =>
+                            updateDeduction(
+                              employee.id,
+                              deductionIndex,
+                              "amount",
+                              parseNumber(event.target.value),
+                            )
+                          }
+                          className="rounded-2xl border border-line bg-panel px-4 py-3 outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeDeduction(employee.id, deductionIndex)}
+                          className="rounded-2xl border border-line px-4 py-3 text-sm font-semibold text-foreground"
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted">
+                      Este colaborador no tiene descuentos manuales.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </article>
+          </details>
         ))}
       </div>
     </section>

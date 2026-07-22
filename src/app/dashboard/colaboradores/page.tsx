@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { DashboardWorkspace } from "@/components/dashboard-workspace";
 import { PayrollCalculatorPanel } from "@/components/payroll-calculator-panel";
 import { usePayroll } from "@/components/payroll-provider";
 import { ReportActions } from "@/components/report-actions";
@@ -13,43 +14,49 @@ export default function CollaboratorsPage() {
   const employees = searchEmployees(payrollSummary, query);
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
-          Pantalla B
-        </p>
-        <h1 className="text-3xl font-semibold text-foreground">Busqueda de colaboradores</h1>
-        <p className="max-w-3xl text-sm leading-6 text-muted">
-          Consulta salario base, otros ingresos, salario total, descuentos de ley y neto a pagar.
-        </p>
-      </header>
-
-      <PayrollCalculatorPanel
-        title="Entrada de datos"
-        description="Modifica la planilla y usa la busqueda para revisar rapidamente el detalle de cada colaborador."
-      />
-
-      <ReportActions reportType="colaboradores" />
-
-      <form
-        className="no-print flex flex-col gap-3 rounded-3xl border border-line bg-background p-4 shadow-sm md:flex-row md:items-center"
-        onSubmit={(event) => event.preventDefault()}
-      >
-        <input
-          type="search"
-          name="q"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Buscar por nombre, cedula o cargo"
-          className="w-full rounded-2xl border border-line bg-panel px-4 py-3 outline-none"
+    <DashboardWorkspace
+      header={
+        <header className="space-y-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
+            Pantalla B
+          </p>
+          <h1 className="text-3xl font-semibold text-foreground">Busqueda de colaboradores</h1>
+          <p className="max-w-3xl text-sm leading-6 text-muted">
+            Consulta salario base, otros ingresos, salario total, descuentos de ley y neto a pagar.
+          </p>
+        </header>
+      }
+      calculator={
+        <PayrollCalculatorPanel
+          title="Entrada de datos"
+          description="Modifica la planilla y usa la busqueda para revisar rapidamente el detalle de cada colaborador."
         />
-      </form>
+      }
+      actions={
+        <div className="space-y-4">
+          <ReportActions reportType="colaboradores" />
 
+          <form
+            className="no-print content-card flex flex-col gap-3 rounded-3xl border border-line p-4 shadow-sm md:flex-row md:items-center"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <input
+              type="search"
+              name="q"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Buscar por nombre, cedula o cargo"
+              className="w-full rounded-2xl border border-line bg-panel px-4 py-3 outline-none"
+            />
+          </form>
+        </div>
+      }
+    >
       <section className="space-y-4">
         {employees.map((item) => (
           <article
             key={item.employee.id}
-            className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm"
+            className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm"
           >
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -60,7 +67,7 @@ export default function CollaboratorsPage() {
                   {item.employee.position || "Cargo sin definir"}
                 </p>
               </div>
-              <div className="rounded-3xl bg-panel px-4 py-3 text-right">
+                <div className="rounded-3xl bg-soft px-4 py-3 text-right">
                 <p className="text-xs uppercase tracking-[0.18em] text-muted">Salario neto</p>
                 <p className="mt-1 text-2xl font-semibold text-foreground">
                   {currency(item.netPay)}
@@ -120,6 +127,6 @@ export default function CollaboratorsPage() {
           </article>
         ))}
       </section>
-    </div>
+    </DashboardWorkspace>
   );
 }

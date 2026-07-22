@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardWorkspace } from "@/components/dashboard-workspace";
 import { PayrollCalculatorPanel } from "@/components/payroll-calculator-panel";
 import { usePayroll } from "@/components/payroll-provider";
 import { ReportActions } from "@/components/report-actions";
@@ -16,25 +17,27 @@ export default function PayrollPage() {
   const { payrollSummary } = usePayroll();
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
-          Pantalla C
-        </p>
-        <h1 className="text-3xl font-semibold text-foreground">Reporte de planilla</h1>
-        <p className="max-w-3xl text-sm leading-6 text-muted">
-          Resumen del periodo calculado, incluyendo pagos netos, descuentos y aportes patronales para CSS.
-        </p>
-      </header>
-
-      <PayrollCalculatorPanel
-        title="Entrada para el reporte"
-        description="Los datos que ingreses aqui alimentan el reporte de planilla, impresion y envio por correo."
-      />
-
-      <ReportActions reportType="planilla" />
-
-      <section className="grid gap-4 lg:grid-cols-4">
+    <DashboardWorkspace
+      header={
+        <header className="space-y-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
+            Pantalla C
+          </p>
+          <h1 className="text-3xl font-semibold text-foreground">Reporte de planilla</h1>
+          <p className="max-w-3xl text-sm leading-6 text-muted">
+            Resumen del periodo calculado, incluyendo pagos netos, descuentos y aportes patronales para CSS.
+          </p>
+        </header>
+      }
+      calculator={
+        <PayrollCalculatorPanel
+          title="Entrada para el reporte"
+          description="Los datos que ingreses aqui alimentan el reporte de planilla, impresion y envio por correo."
+        />
+      }
+      actions={<ReportActions reportType="planilla" />}
+    >
+      <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         {[
           ["Bruto total", currency(payrollSummary.totals.grossIncome)],
           ["Deducciones totales", currency(payrollSummary.totals.totalDeductions)],
@@ -43,7 +46,7 @@ export default function PayrollPage() {
         ].map(([label, value]) => (
           <article
             key={label}
-            className="print-card rounded-[2rem] border border-line bg-background p-5 shadow-sm"
+            className="print-card content-card rounded-[2rem] border border-line p-5 shadow-sm"
           >
             <p className="text-sm text-muted">{label}</p>
             <p className="mt-4 text-3xl font-semibold text-foreground">{value}</p>
@@ -51,7 +54,7 @@ export default function PayrollPage() {
         ))}
       </section>
 
-      <section className="print-card overflow-hidden rounded-[2rem] border border-line bg-background shadow-sm">
+      <section className="print-card content-card overflow-hidden rounded-[2rem] border border-line shadow-sm">
         <div className="border-b border-line px-6 py-5">
           <h2 className="text-xl font-semibold text-foreground">Planilla por colaborador</h2>
         </div>
@@ -106,8 +109,8 @@ export default function PayrollPage() {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <article className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm">
+      <section className="grid gap-4 2xl:grid-cols-2">
+        <article className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-foreground">Reporte para Caja de Seguro Social</h2>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {[
@@ -135,7 +138,7 @@ export default function PayrollPage() {
           </div>
         </article>
 
-        <article className="print-card rounded-[2rem] border border-line bg-background p-6 shadow-sm">
+        <article className="print-card content-card rounded-[2rem] border border-line p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-foreground">Base normativa usada</h2>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-muted">
             <li>ISR anualizado con tramos 0%, 15% y 25%.</li>
@@ -151,6 +154,6 @@ export default function PayrollPage() {
           </ul>
         </article>
       </section>
-    </div>
+    </DashboardWorkspace>
   );
 }
