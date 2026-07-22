@@ -29,9 +29,8 @@ export type DeductionLine = {
   kind: DeductionKind;
 };
 
-export type EmployeeSeed = {
+export type EmployeePayrollInput = {
   id: string;
-  group: number;
   fullName: string;
   cedula: string;
   maritalStatus: MaritalStatus;
@@ -52,8 +51,19 @@ export type EmployeeSeed = {
   monthlyDeductions: Array<{ label: string; amount: number }>;
 };
 
+export type PayrollInput = {
+  periodLabel: string;
+  companyName: string;
+  activity: string;
+  location: string;
+  weeklyHours: number;
+  minimumWageReference: string;
+  professionalRiskRate: number;
+  employees: EmployeePayrollInput[];
+};
+
 export type EmployeePayrollReport = {
-  employee: EmployeeSeed;
+  employee: EmployeePayrollInput;
   hourlyRate: number;
   basePay: number;
   otherIncomeTotal: number;
@@ -104,98 +114,14 @@ export type ReportCard = {
   href: string;
 };
 
-export const COMPANY_PROFILE = {
-  name: "Planilla Pro Panama",
-  legalDemoName: "La Prospera, S.A.",
-  activity: "Fabricacion de cemento",
-  location: "Juan Diaz, Ciudad de Panama",
-  weeklyHours: 45,
-  professionalRiskRate: 0.0056,
-  minimumWageReference:
-    "Decreto Ejecutivo 13 del 31 de diciembre de 2025, Region 1, fabricacion de cemento/concreto.",
-  payPeriodLabel: "Segunda quincena de junio 2026",
-  minimumHourlyRateRegionOneCement: 3.39,
-};
+export const EMPLOYEE_CSS_RATE = 0.0975;
+export const EMPLOYER_CSS_RATE = 0.1325;
+export const EMPLOYEE_EDUCATIONAL_INSURANCE_RATE = 0.0125;
+export const EMPLOYER_EDUCATIONAL_INSURANCE_RATE = 0.015;
+export const DEFAULT_PROFESSIONAL_RISK_RATE = 0.0056;
 
-const EMPLOYEE_CSS_RATE = 0.0975;
-const EMPLOYER_CSS_RATE = 0.1325;
-const EMPLOYEE_EDUCATIONAL_INSURANCE_RATE = 0.0125;
-const EMPLOYER_EDUCATIONAL_INSURANCE_RATE = 0.015;
 const QUINCENAS_PER_YEAR_WITH_THIRTEENTH_MONTH = 26;
 const MONTHLY_HOURS = 195;
-
-export const GROUP_4_EMPLOYEES: EmployeeSeed[] = [
-  {
-    id: "g4-jose-gonzalez",
-    group: 4,
-    fullName: "Jose Gonzalez",
-    cedula: "4-590-678",
-    maritalStatus: "casado",
-    position: "Reparador de calle",
-    startYear: 2021,
-    startDate: "2021-01-15",
-    monthlyBaseSalary: 600,
-    notes: "Prima de produccion reportada para esta quincena.",
-    periodExtras: {
-      companyBonus: 120,
-      productionBonus: 600,
-    },
-    monthlyDeductions: [{ label: "Prestamo", amount: 200 }],
-  },
-  {
-    id: "g4-rafael-fernandez",
-    group: 4,
-    fullName: "Rafael Fernandez",
-    cedula: "10-400-390",
-    maritalStatus: "soltero",
-    position: "Supervisora de planta",
-    startYear: 2020,
-    startDate: "2020-02-10",
-    monthlyBaseSalary: 1000,
-    notes: "Dieta por capacitacion en Costa Rica reportada para este periodo.",
-    periodExtras: {
-      companyBonus: 120,
-      oneTimeAllowance: 5000,
-    },
-    monthlyDeductions: [{ label: "Muebleria", amount: 300 }],
-  },
-  {
-    id: "g4-mariano-ramos",
-    group: 4,
-    fullName: "Mariano Ramos",
-    cedula: "5-789-352",
-    maritalStatus: "soltero",
-    position: "Analista supervisor",
-    startYear: 2019,
-    startDate: "2019-04-01",
-    monthlyBaseSalary: 900,
-    notes: "Comision del 2% sobre ventas por B/.9,000 en esta quincena.",
-    periodExtras: {
-      companyBonus: 120,
-      commissionRate: 0.02,
-      commissionBase: 9000,
-    },
-    monthlyDeductions: [{ label: "Ahorro empresa", amount: 200 }],
-  },
-  {
-    id: "g4-gloria-benitez",
-    group: 4,
-    fullName: "Gloria Benitez",
-    cedula: "5-230-456",
-    maritalStatus: "declara conjuntamente",
-    position: "Secretaria",
-    startYear: 2022,
-    startDate: "2022-05-18",
-    monthlyBaseSalary: 870,
-    notes: "Horas extra: lunes 3, jueves 3, sabado 3.",
-    periodExtras: {
-      companyBonus: 120,
-      overtimeHours: 6,
-      saturdayOvertimeHours: 3,
-    },
-    monthlyDeductions: [],
-  },
-];
 
 export const REPORT_CARDS: ReportCard[] = [
   {
@@ -215,6 +141,18 @@ export const REPORT_CARDS: ReportCard[] = [
   },
 ];
 
+export const DEFAULT_PAYROLL_INPUT: PayrollInput = {
+  periodLabel: "Segunda quincena de junio 2026",
+  companyName: "Mi empresa",
+  activity: "Actividad economica",
+  location: "Ciudad de Panama",
+  weeklyHours: 45,
+  minimumWageReference:
+    "Decreto Ejecutivo 13 del 31 de diciembre de 2025, Region 1, fabricacion de cemento/concreto.",
+  professionalRiskRate: DEFAULT_PROFESSIONAL_RISK_RATE,
+  employees: [],
+};
+
 export function currency(value: number) {
   return new Intl.NumberFormat("es-PA", {
     style: "currency",
@@ -225,6 +163,10 @@ export function currency(value: number) {
 
 export function roundCurrency(value: number) {
   return Math.round(value * 100) / 100;
+}
+
+export function toPercentage(value: number) {
+  return `${roundCurrency(value * 100)}%`;
 }
 
 function computeIncomeTax(annualizedBase: number) {
@@ -247,17 +189,17 @@ function getBasePay(monthlyBaseSalary: number) {
   return monthlyBaseSalary / 2;
 }
 
-function getCommission(seed: EmployeeSeed) {
-  if (!seed.periodExtras.commissionRate || !seed.periodExtras.commissionBase) {
+function getCommission(employee: EmployeePayrollInput) {
+  if (!employee.periodExtras.commissionRate || !employee.periodExtras.commissionBase) {
     return 0;
   }
 
-  return seed.periodExtras.commissionRate * seed.periodExtras.commissionBase;
+  return employee.periodExtras.commissionRate * employee.periodExtras.commissionBase;
 }
 
-function getOvertimePay(seed: EmployeeSeed, hourlyRate: number) {
-  const normalHours = seed.periodExtras.overtimeHours ?? 0;
-  const saturdayHours = seed.periodExtras.saturdayOvertimeHours ?? 0;
+function getOvertimePay(employee: EmployeePayrollInput, hourlyRate: number) {
+  const normalHours = employee.periodExtras.overtimeHours ?? 0;
+  const saturdayHours = employee.periodExtras.saturdayOvertimeHours ?? 0;
 
   const normalPay = normalHours * hourlyRate * 1.25;
   const saturdayPay = saturdayHours * hourlyRate * 1.25;
@@ -265,14 +207,14 @@ function getOvertimePay(seed: EmployeeSeed, hourlyRate: number) {
   return roundCurrency(normalPay + saturdayPay);
 }
 
-function buildIncomeLines(seed: EmployeeSeed): IncomeLine[] {
-  const basePay = roundCurrency(getBasePay(seed.monthlyBaseSalary));
-  const hourlyRate = getHourlyRate(seed.monthlyBaseSalary);
-  const overtimePay = getOvertimePay(seed, hourlyRate);
-  const commissionPay = roundCurrency(getCommission(seed));
-  const productionBonus = roundCurrency(seed.periodExtras.productionBonus ?? 0);
-  const companyBonus = roundCurrency(seed.periodExtras.companyBonus ?? 0);
-  const allowance = roundCurrency(seed.periodExtras.oneTimeAllowance ?? 0);
+function buildIncomeLines(employee: EmployeePayrollInput): IncomeLine[] {
+  const basePay = roundCurrency(getBasePay(employee.monthlyBaseSalary));
+  const hourlyRate = getHourlyRate(employee.monthlyBaseSalary);
+  const overtimePay = getOvertimePay(employee, hourlyRate);
+  const commissionPay = roundCurrency(getCommission(employee));
+  const productionBonus = roundCurrency(employee.periodExtras.productionBonus ?? 0);
+  const companyBonus = roundCurrency(employee.periodExtras.companyBonus ?? 0);
+  const allowance = roundCurrency(employee.periodExtras.oneTimeAllowance ?? 0);
 
   return [
     {
@@ -326,18 +268,23 @@ function buildIncomeLines(seed: EmployeeSeed): IncomeLine[] {
   ].filter((line) => line.amount > 0);
 }
 
-function buildManualDeductions(seed: EmployeeSeed): DeductionLine[] {
-  return seed.monthlyDeductions.map((deduction) => ({
-    label: deduction.label,
-    amount: roundCurrency(deduction.amount / 2),
-    kind: "manual" as const,
-  }));
+function buildManualDeductions(employee: EmployeePayrollInput): DeductionLine[] {
+  return employee.monthlyDeductions
+    .filter((deduction) => deduction.label.trim() || deduction.amount > 0)
+    .map((deduction) => ({
+      label: deduction.label.trim() || "Descuento manual",
+      amount: roundCurrency(deduction.amount / 2),
+      kind: "manual" as const,
+    }));
 }
 
-export function calculateEmployeePayroll(seed: EmployeeSeed): EmployeePayrollReport {
-  const hourlyRate = roundCurrency(getHourlyRate(seed.monthlyBaseSalary));
-  const incomes = buildIncomeLines(seed);
-  const manualDeductions = buildManualDeductions(seed);
+export function calculateEmployeePayroll(
+  employee: EmployeePayrollInput,
+  professionalRiskRate: number = DEFAULT_PROFESSIONAL_RISK_RATE,
+): EmployeePayrollReport {
+  const hourlyRate = roundCurrency(getHourlyRate(employee.monthlyBaseSalary));
+  const incomes = buildIncomeLines(employee);
+  const manualDeductions = buildManualDeductions(employee);
   const basePay = incomes.find((line) => line.kind === "base")?.amount ?? 0;
   const grossIncome = roundCurrency(
     incomes.reduce((sum, income) => sum + income.amount, 0),
@@ -395,15 +342,13 @@ export function calculateEmployeePayroll(seed: EmployeeSeed): EmployeePayrollRep
   const employerEducationalInsurance = roundCurrency(
     educationalInsuranceBase * EMPLOYER_EDUCATIONAL_INSURANCE_RATE,
   );
-  const employerProfessionalRisk = roundCurrency(
-    cssBase * COMPANY_PROFILE.professionalRiskRate,
-  );
+  const employerProfessionalRisk = roundCurrency(cssBase * professionalRiskRate);
   const employerBurdenTotal = roundCurrency(
     employerCss + employerEducationalInsurance + employerProfessionalRisk,
   );
 
   return {
-    employee: seed,
+    employee,
     hourlyRate,
     basePay,
     otherIncomeTotal: roundCurrency(grossIncome - basePay),
@@ -426,8 +371,10 @@ export function calculateEmployeePayroll(seed: EmployeeSeed): EmployeePayrollRep
   };
 }
 
-export function getGroup4PayrollSummary(): PayrollSummary {
-  const employees = GROUP_4_EMPLOYEES.map(calculateEmployeePayroll);
+export function buildPayrollSummary(input: PayrollInput): PayrollSummary {
+  const employees = input.employees.map((employee) =>
+    calculateEmployeePayroll(employee, input.professionalRiskRate),
+  );
 
   const totals = employees.reduce(
     (accumulator, employee) => ({
@@ -463,13 +410,13 @@ export function getGroup4PayrollSummary(): PayrollSummary {
   );
 
   return {
-    periodLabel: COMPANY_PROFILE.payPeriodLabel,
-    companyName: COMPANY_PROFILE.legalDemoName,
-    activity: COMPANY_PROFILE.activity,
-    location: COMPANY_PROFILE.location,
-    weeklyHours: COMPANY_PROFILE.weeklyHours,
-    minimumWageReference: COMPANY_PROFILE.minimumWageReference,
-    professionalRiskRate: COMPANY_PROFILE.professionalRiskRate,
+    periodLabel: input.periodLabel,
+    companyName: input.companyName,
+    activity: input.activity,
+    location: input.location,
+    weeklyHours: input.weeklyHours,
+    minimumWageReference: input.minimumWageReference,
+    professionalRiskRate: input.professionalRiskRate,
     employees,
     totals: {
       grossIncome: roundCurrency(totals.grossIncome),
@@ -490,14 +437,14 @@ export function getGroup4PayrollSummary(): PayrollSummary {
   };
 }
 
-export function getEmployeeReportById(id: string) {
-  return getGroup4PayrollSummary().employees.find((employee) => employee.employee.id === id);
+export function getEmployeeReportById(summary: PayrollSummary, id: string) {
+  return summary.employees.find((employee) => employee.employee.id === id);
 }
 
-export function searchEmployees(query: string) {
+export function searchEmployees(summary: PayrollSummary, query: string) {
   const normalized = query.trim().toLowerCase();
 
-  return getGroup4PayrollSummary().employees.filter((employee) => {
+  return summary.employees.filter((employee) => {
     if (!normalized) {
       return true;
     }
@@ -513,9 +460,10 @@ export function searchEmployees(query: string) {
   });
 }
 
-export function serializeReportForEmail(reportType: string) {
-  const summary = getGroup4PayrollSummary();
-
+export function serializeReportForEmail(
+  summary: PayrollSummary,
+  reportType: string,
+) {
   if (reportType === "personal") {
     return {
       title: "Reporte de datos del personal",
