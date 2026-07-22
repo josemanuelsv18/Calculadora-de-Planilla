@@ -32,7 +32,7 @@ export function PayrollCalculatorPanel({
 
   return (
     <section className="no-print content-card rounded-[2rem] border border-line p-5 shadow-sm md:p-6">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
             Calculadora
@@ -40,7 +40,7 @@ export function PayrollCalculatorPanel({
           <h2 className="mt-2 text-2xl font-semibold text-foreground">{title}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{description}</p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+        <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[420px]">
           <div className="rounded-2xl border border-line bg-soft px-4 py-3">
             <p className="text-xs uppercase tracking-[0.18em] text-muted">Colaboradores</p>
             <p className="mt-1 text-xl font-semibold text-foreground">
@@ -62,8 +62,8 @@ export function PayrollCalculatorPanel({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+      <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)]">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
             Empresa
             <input
@@ -148,8 +148,8 @@ export function PayrollCalculatorPanel({
         </label>
       </div>
 
-      <div className="mt-6 flex flex-col gap-4">
-        <div className="rounded-2xl border border-dashed border-line bg-soft px-4 py-3 text-sm leading-6 text-muted">
+      <div className="mt-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="rounded-2xl border border-dashed border-line bg-soft px-4 py-3 text-sm leading-6 text-muted xl:max-w-3xl">
           <p>CSS empleado {toPercentage(0.0975)} | CSS empleador {toPercentage(0.1325)}</p>
           <p>Seguro educativo empleado {toPercentage(0.0125)} | empleador {toPercentage(0.015)}</p>
         </div>
@@ -169,7 +169,7 @@ export function PayrollCalculatorPanel({
             open={employeeIndex === 0}
             className="rounded-[2rem] border border-line bg-panel shadow-sm"
           >
-            <summary className="flex cursor-pointer list-none flex-col gap-4 p-5">
+            <summary className="flex cursor-pointer list-none flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
                   Colaborador {employeeIndex + 1}
@@ -181,8 +181,8 @@ export function PayrollCalculatorPanel({
                   {employee.position || "Cargo sin definir"} · Base {currency(employee.monthlyBaseSalary)}
                 </p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-[1fr_auto] xl:grid-cols-1">
-                <span className="rounded-2xl bg-soft px-3 py-2 text-sm font-semibold text-foreground">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-soft px-3 py-2 text-sm font-semibold text-foreground">
                   Neto estimado {currency(
                     payrollSummary.employees.find(
                       (summaryEmployee) => summaryEmployee.employee.id === employee.id,
@@ -204,7 +204,7 @@ export function PayrollCalculatorPanel({
             </summary>
 
             <div className="border-t border-line px-5 pb-5 pt-5">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
                 Nombre completo
                 <input
@@ -314,7 +314,7 @@ export function PayrollCalculatorPanel({
               </label>
             </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <label className="flex flex-col gap-2 text-sm font-medium text-foreground">
                 Bonificacion general
                 <input
