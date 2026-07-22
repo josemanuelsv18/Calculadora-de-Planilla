@@ -10,7 +10,7 @@ create table if not exists public.employees (
   start_year integer not null,
   start_date date not null,
   monthly_base_salary numeric(12,2) not null,
-  group_number integer not null default 4,
+  group_number integer not null,
   notes text,
   created_at timestamptz not null default now()
 );

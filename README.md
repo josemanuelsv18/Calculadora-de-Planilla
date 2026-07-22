@@ -1,6 +1,6 @@
 # Calculadora de Planilla
 
-Aplicacion web en Next.js para calcular y presentar planillas academicas del grupo 4.
+Aplicacion web en Next.js para construir y calcular planillas de forma dinamica.
 Incluye:
 
 - acceso de administrador con modo demo o Supabase Auth;
@@ -8,6 +8,8 @@ Incluye:
 - vistas de personal, busqueda individual y reporte de planilla;
 - envio de reportes por correo con Resend;
 - esquema y datos semilla para Supabase.
+
+La aplicacion funciona como calculadora: el usuario ingresa los datos de la empresa, del periodo y de cada colaborador, y el sistema genera los resultados correspondientes. Si necesitas reproducir el caso de evaluacion del grupo 4, simplemente ingresa esos datos en la interfaz.
 
 ## Clonar
 
